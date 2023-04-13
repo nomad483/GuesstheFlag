@@ -8,10 +8,13 @@
 import SwiftUI
 
 struct ContentView: View {
+    let maxQuestionCount = 8
     @State private var showingScore = false
     @State private var scoreTitle = ""
+    @State private var wrongTitle = ""
     @State private var totalScore = 0
     @State private var wrong = false
+    @State private var countQuestions = 0
     
     @State private var countries = ["Estonia", "France", "Germany", "Ireland", "Italy", "Nigeria", "Poland", "Ukraine", "Spain", "UK", "US"].shuffled()
     @State private var correctAnswer = Int.random(in: 0...2)
@@ -56,6 +59,10 @@ struct ContentView: View {
                 .background(.thinMaterial)
                 .clipShape(RoundedRectangle(cornerRadius: 20))
                 
+                Text("Questions: \(countQuestions)/\(maxQuestionCount)")
+                    .font(.title.bold())
+                    .foregroundColor(.white)
+                
                 Spacer()
                 Spacer()
                 
@@ -67,8 +74,13 @@ struct ContentView: View {
             }
             .padding()
         }
+        .alert(wrongTitle, isPresented: $wrong) {
+            Button("Continue") {}
+        } message: {
+            Text("That’s the flag of \(countries[correctAnswer])")
+        }
         .alert(scoreTitle, isPresented: $showingScore) {
-            Button("Continue", action: askQuestion)
+            Button("Reset", action: reset)
         } message: {
             Text("You score is \(totalScore)")
         }
@@ -76,24 +88,30 @@ struct ContentView: View {
     
     func flagTapped(_ number: Int) {
         if number == correctAnswer {
-            scoreTitle = "Correct"
             totalScore += 1
         } else {
-            scoreTitle = "Wrong"
-            wrong.toggle()
+            wrongTitle = "Wrong!"
+            wrong = true
         }
+        countQuestions += 1
+        newQuestion()
         
-        showingScore = true
+        if countQuestions == maxQuestionCount {
+            showingScore = true
+        }
     }
     
-    func askQuestion() {
+    func reset() {
+        newQuestion()
+        
+        totalScore = 0
+        countQuestions = 0
+    }
+    
+    
+    func newQuestion() {
         countries.shuffle()
         correctAnswer = Int.random(in: 0...2)
-        
-        if wrong {
-            totalScore = 0
-            wrong.toggle()
-        }
     }
 }
 
