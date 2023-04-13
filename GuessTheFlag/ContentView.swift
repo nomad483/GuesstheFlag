@@ -76,8 +76,6 @@ struct ContentView: View {
         }
         .alert(wrongTitle, isPresented: $wrong) {
             Button("Continue") {}
-        } message: {
-            Text("That’s the flag of \(countries[correctAnswer])")
         }
         .alert(scoreTitle, isPresented: $showingScore) {
             Button("Reset", action: reset)
@@ -90,7 +88,7 @@ struct ContentView: View {
         if number == correctAnswer {
             totalScore += 1
         } else {
-            wrongTitle = "Wrong!"
+            wrongTitle = "Wrong! That’s the flag of \(countries[number])"
             wrong = true
         }
         countQuestions += 1
